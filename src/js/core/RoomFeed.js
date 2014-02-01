@@ -69,6 +69,10 @@ function ($, util, appnet, PatterEmbed) {
     this.webSocket.onopen = function (e) {
       roomFeed.webSocketActive = true;
 //      console.log('open');
+
+      if ($('#room_header .room_title .ws_active_indicator').length === 0) {
+        $('<span class="ws_active_indicator"></span>').appendTo('#room_header .room_title');
+      }
     };
 
     this.webSocket.onmessage = function (e) {
@@ -102,6 +106,9 @@ function ($, util, appnet, PatterEmbed) {
 
       // Fall back to polling.
       roomFeed.checkFeed();
+
+      // Remove the indicator.
+      $('#room_header .room_title .ws_active_indicator').remove();
     };
   };
 
