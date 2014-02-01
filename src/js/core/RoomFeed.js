@@ -52,12 +52,6 @@ function ($, util, appnet, PatterEmbed) {
       this.subscriptionId = generateUUID();
     }
 
-    try {
-      if (localStorage.connectionId) {
-        this.connectionId = localStorage.connectionId;
-      }
-    } catch (_e) { }
-
     streamUrl = 'wss://stream-channel.app.net/stream/user?include_annotations=1&include_html=1&include_marker=1&include_recent_message=1&include_html=1&auto_delete=1&access_token=' + appnet.api.accessToken;
 
     if (this.connectionId !== null) {
@@ -83,9 +77,6 @@ function ($, util, appnet, PatterEmbed) {
 
       if (payload.meta.connection_id) {
         roomFeed.connectionId = payload.meta.connection_id;
-        try {
-          localStorage.connectionId = payload.meta.connection_id;
-        } catch (_e) { }
 
         callback(roomFeed.connectionId);
       }
@@ -109,11 +100,8 @@ function ($, util, appnet, PatterEmbed) {
       roomFeed.webSocketActive = false;
       roomFeed.connectionId = null;
 
-      try {
-        localStorage.connectionId = null;
-      } catch (_e) { }
-      clearTimeout(this.timer);
-      this.timer = setTimeout($.proxy(this.checkFeed, this), 2000);
+      // Fall back to polling.
+      roomFeed.checkFeed();
     };
   };
 
