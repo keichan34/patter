@@ -68,7 +68,6 @@ function ($, util, appnet, PatterEmbed) {
 
     this.webSocket.onopen = function (e) {
       roomFeed.webSocketActive = true;
-//      console.log('open');
 
       if ($('#room_header .room_title .ws_active_indicator').length === 0) {
         $('<span class="ws_active_indicator"></span>').appendTo('#room_header .room_title');
@@ -76,7 +75,6 @@ function ($, util, appnet, PatterEmbed) {
     };
 
     this.webSocket.onmessage = function (e) {
-//      console.log('message');
       var payload = JSON.parse(e.data);
 
       if (payload.meta.connection_id) {
@@ -91,15 +89,18 @@ function ($, util, appnet, PatterEmbed) {
     };
 
     this.webSocket.onclose = function (e) {
-//      console.log('close');
+      roomFeed.dontUseWebSocket = true;
       roomFeed.webSocketActive = false;
-      roomFeed.shownFeed = false;
-      clearTimeout(this.timer);
-      this.timer = setTimeout($.proxy(this.checkFeed, this), 2000);
+      roomFeed.connectionId = null;
+
+      // Fall back to polling.
+      roomFeed.checkFeed();
+
+      // Remove the indicator.
+      $('#room_header .room_title .ws_active_indicator').remove();
     };
 
     this.webSocket.onerror = function (e) {
-//      console.log('error');
       roomFeed.dontUseWebSocket = true;
       roomFeed.webSocketActive = false;
       roomFeed.connectionId = null;
